@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<title>A7R II Manuel Asistan</title>
+<style>
+*{-webkit-box-sizing:border-box;box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+html{-webkit-text-size-adjust:100%;}
+body{font-family:-apple-system,Helvetica,Arial,sans-serif;background:#0a0b0e;color:#cdd5e0;max-width:480px;margin:0 auto;overflow-x:hidden;font-size:15px;}
+/* HEADER */
+.hd{background:#111318;border-bottom:1px solid #252c3a;padding:14px 18px 12px;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;}
+.hd-l{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;}
+.sony{background:#e8820a;color:#fff;font-size:11px;font-weight:700;letter-spacing:2px;padding:3px 8px;border-radius:3px;margin-right:10px;}
+.cam{font-size:18px;font-weight:700;letter-spacing:1px;color:#eef2f8;}
+.camsub{font-size:10px;color:#5a6880;letter-spacing:2px;margin-top:1px;}
+.dot{width:8px;height:8px;border-radius:50%;background:#22c55e;}
+/* TABS */
+.tabs{display:-webkit-box;display:-webkit-flex;display:flex;background:#111318;border-bottom:1px solid #252c3a;}
+button.tab{-webkit-box-flex:1;-webkit-flex:1;flex:1;padding:13px 4px;font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#5a6880;border:none;border-bottom:3px solid transparent;background:transparent;cursor:pointer;font-family:-apple-system,Helvetica,Arial,sans-serif;-webkit-appearance:none;}
+button.tab.on{color:#e8960a;border-bottom-color:#e8960a;}
+/* SECTIONS */
+.sec{display:none;padding:16px;}
+.sec.on{display:block;}
+.stitle{font-size:10px;font-weight:700;letter-spacing:3px;text-transform:uppercase;color:#5a6880;margin-bottom:14px;}
+/* ISIK GRID */
+.isik-grid{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;margin:-4px;margin-bottom:16px;}
+.isik-kart{width:50%;padding:4px;-webkit-box-sizing:border-box;box-sizing:border-box;}
+button.ik{width:100%;background:#181c24;border:2px solid #252c3a;border-radius:10px;padding:12px 10px;cursor:pointer;text-align:center;font-family:-apple-system,Helvetica,Arial,sans-serif;-webkit-appearance:none;}
+button.ik.on{border-color:#e8960a;background:rgba(232,150,10,0.12);}
+.ik-ic{font-size:24px;display:block;margin-bottom:6px;}
+.ik-nm{font-size:13px;font-weight:700;color:#eef2f8;display:block;}
+.ik-sb{font-size:10px;color:#5a6880;margin-top:2px;display:block;line-height:1.3;}
+/* DEGER PANEL */
+.dp{background:#181c24;border:1px solid #252c3a;border-radius:12px;overflow:hidden;margin-bottom:14px;display:none;}
+.dp.on{display:block;}
+.dp-hd{background:#7a4800;padding:10px 16px;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;}
+.dp-t{font-size:11px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#fbb022;}
+.dp-sc{font-size:11px;color:#fbb022;opacity:.7;}
+.drow{display:-webkit-box;display:-webkit-flex;display:flex;border-top:1px solid #252c3a;}
+.dk{-webkit-box-flex:1;-webkit-flex:1;flex:1;background:#181c24;padding:14px 6px;text-align:center;border-right:1px solid #252c3a;}
+.dk:last-child{border-right:none;}
+.dkv{font-size:20px;font-weight:700;color:#fbb022;line-height:1;}
+.dkl{font-size:9px;color:#5a6880;letter-spacing:1.5px;text-transform:uppercase;margin-top:5px;}
+.dp-bd{padding:14px 16px;}
+.dp-ip{font-size:13px;color:#cdd5e0;line-height:1.6;margin-bottom:10px;}
+.dp-uy{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:8px;padding:8px 12px;font-size:12px;color:#fca5a5;display:none;}
+.dp-uy.on{display:block;}
+/* EV */
+.ev-p{background:#181c24;border:1px solid #252c3a;border-radius:10px;padding:14px 16px;margin-bottom:14px;display:none;}
+.ev-p.on{display:block;}
+.ev-l{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#5a6880;margin-bottom:10px;}
+.ev-tr{height:8px;background:#1e2330;border-radius:100px;overflow:hidden;margin-bottom:8px;position:relative;}
+.ev-fi{position:absolute;left:0;top:0;bottom:0;border-radius:100px;-webkit-transition:width .5s;transition:width .5s;}
+.ev-ls{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;font-size:10px;color:#3a4455;}
+.ev-vl{text-align:center;font-size:15px;font-weight:700;margin-top:8px;}
+/* ALT */
+.alt-p{display:none;margin-top:4px;}
+.alt-i{background:#181c24;border:1px solid #252c3a;border-radius:8px;padding:12px 14px;display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;-webkit-box-pack:justify;-webkit-justify-content:space-between;justify-content:space-between;margin-bottom:6px;}
+.alt-et{font-size:12px;color:#5a6880;}
+.alt-vl{font-size:13px;font-weight:700;color:#cdd5e0;letter-spacing:.5px;}
+/* ND FORM */
+.nd-form{background:#181c24;border:1px solid #252c3a;border-radius:12px;padding:16px;margin-bottom:14px;}
+.flbl{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#5a6880;margin-bottom:10px;display:block;}
+/* ENS */
+.eg{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;margin:-3px;margin-bottom:16px;}
+.eb{width:25%;padding:3px;-webkit-box-sizing:border-box;box-sizing:border-box;}
+button.ei{width:100%;background:#1e2330;border:2px solid #252c3a;border-radius:7px;padding:9px 2px;text-align:center;cursor:pointer;font-size:12px;font-weight:700;color:#cdd5e0;font-family:-apple-system,Helvetica,Arial,sans-serif;-webkit-appearance:none;}
+button.ei.on{border-color:#e8960a;background:rgba(232,150,10,0.12);color:#fbb022;}
+/* ND */
+.ng{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;margin:-3px;margin-bottom:16px;}
+.nb{width:33.333%;padding:3px;-webkit-box-sizing:border-box;box-sizing:border-box;}
+button.ni{width:100%;background:#1e2330;border:2px solid #252c3a;border-radius:7px;padding:10px 4px;text-align:center;cursor:pointer;font-family:-apple-system,Helvetica,Arial,sans-serif;-webkit-appearance:none;}
+button.ni.on{border-color:#06b6d4;background:rgba(6,182,212,0.1);}
+.niv{font-size:14px;font-weight:700;color:#eef2f8;display:block;}
+.nis{font-size:10px;color:#5a6880;margin-top:2px;display:block;}
+button.ni.on .niv{color:#06b6d4;}
+/* BTN */
+button.bhesap{width:100%;padding:15px;background:#e8960a;border:none;border-radius:10px;font-size:15px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:#000;cursor:pointer;font-family:-apple-system,Helvetica,Arial,sans-serif;-webkit-appearance:none;margin-top:4px;}
+button.bhesap.cyan{background:#06b6d4;}
+/* ND SONUC */
+.nds{display:none;background:#111318;border:1px solid #252c3a;border-radius:12px;overflow:hidden;margin-top:14px;}
+.nds.on{display:block;}
+.ns-h{background:rgba(6,182,212,0.1);border-bottom:1px solid rgba(6,182,212,0.2);padding:10px 16px;font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:#06b6d4;}
+.ns-b{padding:16px;}
+.ns-m{font-size:44px;font-weight:700;color:#06b6d4;line-height:1;margin-bottom:4px;}
+.ns-s{font-size:12px;color:#5a6880;margin-bottom:14px;}
+.ns-g{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-flex-wrap:wrap;flex-wrap:wrap;margin:-4px;margin-bottom:4px;}
+.ns-k{width:50%;padding:4px;-webkit-box-sizing:border-box;box-sizing:border-box;}
+.ns-ki{background:#181c24;border:1px solid #252c3a;border-radius:7px;padding:10px 12px;}
+.nkv{font-size:16px;font-weight:700;color:#cdd5e0;}
+.nkl{font-size:9px;color:#5a6880;letter-spacing:1px;margin-top:2px;}
+.ns-ip{font-size:12px;color:#5a6880;line-height:1.6;padding:10px 12px;background:#181c24;border-radius:7px;border-left:3px solid #06b6d4;margin-top:10px;}
+/* OZEL */
+.oz-r{display:-webkit-box;display:-webkit-flex;display:flex;-webkit-box-align:center;-webkit-align-items:center;align-items:center;margin-bottom:12px;}
+.oz-l{font-size:12px;color:#5a6880;min-width:90px;}
+input[type=number]{-webkit-box-flex:1;-webkit-flex:1;flex:1;background:#1e2330;border:1px solid #2e3848;border-radius:8px;padding:12px;color:#eef2f8;font-size:16px;font-weight:700;font-family:-apple-system,Helvetica,Arial,sans-serif;outline:none;-webkit-appearance:none;border:1px solid #2e3848;}
+select{width:100%;background:#1e2330;border:1px solid #2e3848;border-radius:8px;padding:12px 10px;color:#eef2f8;font-size:14px;font-weight:600;font-family:-apple-system,Helvetica,Arial,sans-serif;outline:none;-webkit-appearance:none;margin-bottom:16px;}
+.sp{height:30px;}
+</style>
+</head>
+<body>
+
+<div class="hd">
+  <div class="hd-l">
+    <span class="sony">SONY</span>
+    <div><div class="cam">a7R II</div><div class="camsub">Manuel Mod Asistani</div></div>
+  </div>
+  <div class="dot"></div>
+</div>
+
+<div class="tabs">
+  <button type="button" class="tab on" id="tab-isik">Isik Kosulu</button>
+  <button type="button" class="tab" id="tab-nd">ND Filtre</button>
+  <button type="button" class="tab" id="tab-ozel">Ozel Hesap</button>
+</div>
+
+<!-- ISIK -->
+<div class="sec on" id="s-isik">
+  <div class="stitle">// Isik kosulunu sec</div>
+  <div class="isik-grid">
+    <div class="isik-kart"><button type="button" class="ik" data-isik="gunes_parlak"><span class="ik-ic">☀️</span><span class="ik-nm">Parlak Gunes</span><span class="ik-sb">Acik hava, bulut yok</span></button></div>
+    <div class="isik-kart"><button type="button" class="ik" data-isik="gunes_hafif"><span class="ik-ic">🌤</span><span class="ik-nm">Hafif Bulutlu</span><span class="ik-sb">Yarı golgeli</span></button></div>
+    <div class="isik-kart"><button type="button" class="ik" data-isik="bulutlu"><span class="ik-ic">☁️</span><span class="ik-nm">Kapali Hava</span><span class="ik-sb">Yumusak isik</span></button></div>
+    <div class="isik-kart"><button type="button" class="ik" data-isik="golge"><span class="ik-ic">🌳</span><span class="ik-nm">Golge</span><span class="ik-sb">Bina/agac golgesi</span></button></div>
+    <div class="isik-kart"><button type="button" class="ik" data-isik="altin_saat"><span class="ik-ic">🌅</span><span class="ik-nm">Altin Saat</span><span class="ik-sb">Gun dogumu/batimi</span></button></div>
+    <div class="isik-kart"><button type="button" class="ik" data-isik="mavi_saat"><span class="ik-ic">🌆</span><span class="ik-nm">Mavi Saat</span><span class="ik-sb">Gun bat. sonrasi</span></button></div>
+    <div class="isik-kart"><button type="button" class="ik" data-isik="ic_pencere"><span class="ik-ic">🪟</span><span class="ik-nm">Icmekan Pencere</span><span class="ik-sb">Dogal yan isik</span></button></div>
+    <div class="isik-kart"><button type="button" class="ik" data-isik="ic_yapay"><span class="ik-ic">💡</span><span class="ik-nm">Icmekan Yapay</span><span class="ik-sb">Lamba, LED</span></button></div>
+    <div class="isik-kart"><button type="button" class="ik" data-isik="alacakaranlik"><span class="ik-ic">🌙</span><span class="ik-nm">Alacakaranlik</span><span class="ik-sb">Gun bat. 30-60dk</span></button></div>
+    <div class="isik-kart"><button type="button" class="ik" data-isik="gece_sehir"><span class="ik-ic">🌃</span><span class="ik-nm">Gece Sehir</span><span class="ik-sb">Sokak lambalari</span></button></div>
+    <div class="isik-kart"><button type="button" class="ik" data-isik="yildiz"><span class="ik-ic">⭐</span><span class="ik-nm">Yildiz/Samanyolu</span><span class="ik-sb">Karanlik, uzak</span></button></div>
+    <div class="isik-kart"><button type="button" class="ik" data-isik="konser"><span class="ik-ic">🎵</span><span class="ik-nm">Konser/Sahne</span><span class="ik-sb">Renkli spot</span></button></div>
+  </div>
+  <div class="dp" id="degerPanel">
+    <div class="dp-hd"><span class="dp-t">// Onerilen Ayarlar</span><span class="dp-sc" id="dpScene"></span></div>
+    <div class="drow">
+      <div class="dk"><div class="dkv" id="dv_iso">—</div><div class="dkl">ISO</div></div>
+      <div class="dk"><div class="dkv" id="dv_diy">—</div><div class="dkl">Diyafram</div></div>
+      <div class="dk"><div class="dkv" id="dv_ens">—</div><div class="dkl">Enstantane</div></div>
+    </div>
+    <div class="dp-bd">
+      <div class="dp-ip" id="dpIpucu"></div>
+      <div class="dp-uy" id="dpUyari"></div>
+    </div>
+  </div>
+  <div class="ev-p" id="evPanel">
+    <div class="ev-l">// EV Gostergesi</div>
+    <div class="ev-tr"><div class="ev-fi" id="evFill" style="width:50%;background:#e8960a;"></div></div>
+    <div class="ev-ls"><span>EV 0</span><span>EV 6</span><span>EV 12</span><span>EV 18</span></div>
+    <div class="ev-vl" id="evVal"></div>
+  </div>
+  <div class="alt-p" id="altPanel">
+    <div class="stitle" style="margin-top:4px;">// Alternatif kombinasyonlar</div>
+    <div id="altListe"></div>
+  </div>
+  <div class="sp"></div>
+</div>
+
+<!-- ND -->
+<div class="sec" id="s-nd">
+  <div class="stitle">// ND Filtre Hesaplayici</div>
+  <div class="nd-form">
+    <span class="flbl">1 — Filtresiz enstantane sec</span>
+    <div class="eg">
+      <div class="eb"><button type="button" class="ei" data-ens="1/2000" data-val="0.0005">1/2000</button></div>
+      <div class="eb"><button type="button" class="ei" data-ens="1/1000" data-val="0.001">1/1000</button></div>
+      <div class="eb"><button type="button" class="ei" data-ens="1/500" data-val="0.002">1/500</button></div>
+      <div class="eb"><button type="button" class="ei" data-ens="1/250" data-val="0.004">1/250</button></div>
+      <div class="eb"><button type="button" class="ei" data-ens="1/125" data-val="0.008">1/125</button></div>
+      <div class="eb"><button type="button" class="ei" data-ens="1/60" data-val="0.0167">1/60</button></div>
+      <div class="eb"><button type="button" class="ei" data-ens="1/30" data-val="0.033">1/30</button></div>
+      <div class="eb"><button type="button" class="ei" data-ens="1/15" data-val="0.067">1/15</button></div>
+      <div class="eb"><button type="button" class="ei" data-ens="1/8" data-val="0.125">1/8</button></div>
+      <div class="eb"><button type="button" class="ei" data-ens="1/4" data-val="0.25">1/4</button></div>
+      <div class="eb"><button type="button" class="ei" data-ens="1/2" data-val="0.5">1/2</button></div>
+      <div class="eb"><button type="button" class="ei" data-ens="1s" data-val="1">1s</button></div>
+    </div>
+    <span class="flbl">2 — ND filtreyi sec</span>
+    <div class="ng">
+      <div class="nb"><button type="button" class="ni" data-nd="2" data-ad="ND2"><span class="niv">ND2</span><span class="nis">1 stop</span></button></div>
+      <div class="nb"><button type="button" class="ni" data-nd="4" data-ad="ND4"><span class="niv">ND4</span><span class="nis">2 stop</span></button></div>
+      <div class="nb"><button type="button" class="ni" data-nd="8" data-ad="ND8"><span class="niv">ND8</span><span class="nis">3 stop</span></button></div>
+      <div class="nb"><button type="button" class="ni" data-nd="16" data-ad="ND16"><span class="niv">ND16</span><span class="nis">4 stop</span></button></div>
+      <div class="nb"><button type="button" class="ni" data-nd="64" data-ad="ND64"><span class="niv">ND64</span><span class="nis">6 stop</span></button></div>
+      <div class="nb"><button type="button" class="ni" data-nd="128" data-ad="ND128"><span class="niv">ND128</span><span class="nis">7 stop</span></button></div>
+      <div class="nb"><button type="button" class="ni" data-nd="256" data-ad="ND256"><span class="niv">ND256</span><span class="nis">8 stop</span></button></div>
+      <div class="nb"><button type="button" class="ni" data-nd="1000" data-ad="ND1000"><span class="niv">ND1000</span><span class="nis">10 stop</span></button></div>
+      <div class="nb"><button type="button" class="ni" data-nd="4000" data-ad="ND4000"><span class="niv">ND4000</span><span class="nis">12 stop</span></button></div>
+    </div>
+    <button type="button" class="bhesap cyan" id="btnNdHesap">HESAPLA</button>
+  </div>
+  <div class="nds" id="ndSonuc">
+    <div class="ns-h">// ND Sonuc</div>
+    <div class="ns-b">
+      <div class="ns-m" id="nsVal">—</div>
+      <div class="ns-s" id="nsSub">—</div>
+      <div class="ns-g" id="nsGrid"></div>
+      <div class="ns-ip" id="nsIp"></div>
+    </div>
+  </div>
+  <div class="sp"></div>
+</div>
+
+<!-- OZEL -->
+<div class="sec" id="s-ozel">
+  <div class="stitle">// Iki degeri gir, ucuncusunu hesapla</div>
+  <div class="nd-form">
+    <span class="flbl">Bos birak = hesaplanacak</span>
+    <div class="oz-r"><span class="oz-l">ISO</span><input type="number" id="oz_iso" placeholder="100-25600" min="50" max="25600"></div>
+    <div class="oz-r"><span class="oz-l">Diyafram f/</span><input type="number" id="oz_diy" placeholder="1.8-22" min="1" max="22" step="0.1"></div>
+    <div class="oz-r" style="margin-bottom:16px;"><span class="oz-l">Enstantane 1/</span><input type="number" id="oz_ens" placeholder="8000-1" min="1" max="8000"></div>
+    <span class="flbl" style="margin-bottom:8px;">Hedef EV (sahne)</span>
+    <select id="oz_ev">
+      <option value="15">EV 15 - Parlak gunes / kar</option>
+      <option value="14">EV 14 - Acik gunesli gun</option>
+      <option value="13" selected>EV 13 - Hafif bulutlu</option>
+      <option value="12">EV 12 - Kapali hava / golge</option>
+      <option value="10">EV 10 - Icmekan pencere</option>
+      <option value="8">EV 8 - Altin saat</option>
+      <option value="6">EV 6 - Mavi saat</option>
+      <option value="4">EV 4 - Alacakaranlik</option>
+      <option value="2">EV 2 - Gece sehir</option>
+      <option value="0">EV 0 - Karanlik, yildiz</option>
+    </select>
+    <button type="button" class="bhesap" id="btnOzelHesap">HESAPLA</button>
+  </div>
+  <div id="ozelSonuc"></div>
+  <div class="sp"></div>
+</div>
+
+<script>
+var ISIK = {
+  gunes_parlak:{ad:'Parlak Gunes',ev:14,iso:100,diy:'f/11',ens:'1/200',ip:'Sunny 16 kurali aktif. f/16 diyaframda enstantane = 1/ISO. A7R2 42MP ISO 100 maksimum detay verir. ETTR uygulayın.',uy:'',alt:[{iso:100,diy:'f/8',ens:'1/400',et:'Daha hizli'},{iso:100,diy:'f/16',ens:'1/100',et:'Max derinlik'}]},
+  gunes_hafif:{ad:'Hafif Bulutlu',ev:12,iso:100,diy:'f/8',ens:'1/200',ip:'Bulutlar diffuser gorevi gorur. Golgelr yumusur. Portre icin ideal isik. Zebra ile highlight kontrolu yapın.',uy:'',alt:[{iso:100,diy:'f/5.6',ens:'1/400',et:'Arka plan blur'},{iso:100,diy:'f/11',ens:'1/100',et:'Manzara'}]},
+  bulutlu:{ad:'Kapali / Bulutlu',ev:11,iso:200,diy:'f/5.6',ens:'1/200',ip:'Duz, golgesi isik. Portre ve urun icin mukemmel. ISO 200 A7R2de neredeyse gurultusuz. WB Bulutlu 6500K.',uy:'',alt:[{iso:100,diy:'f/4',ens:'1/200',et:'Diyafram ac'}]},
+  golge:{ad:'Golge',ev:10,iso:400,diy:'f/4',ens:'1/160',ip:'Golgede isik mavimsidir. WB Golge (7000-8000K) yapın, mavi cast olusur aksi halde. RAW sonradan duzeltilir.',uy:'WB kritik! Golge veya 7000-8000K kullanin.',alt:[{iso:200,diy:'f/2.8',ens:'1/160',et:'Diyafram ac'}]},
+  altin_saat:{ad:'Altin Saat',ev:9,iso:100,diy:'f/5.6',ens:'1/125',ip:'Isik hizla degisir — her 3-5 dakikada kontrol edin. DRO aktif edin. Gokyuzu icin -1/3 EV deneyin.',uy:'Isik dakikada degisiyor! Surekli kontrol.',alt:[{iso:100,diy:'f/8',ens:'1/60',et:'Manzara'},{iso:200,diy:'f/2.8',ens:'1/250',et:'Portre'}]},
+  mavi_saat:{ad:'Mavi Saat',ev:6,iso:400,diy:'f/4',ens:'1/30',ip:'Tripod sart! A7R2 IBIS acik tutun. 15-20 dakika penceresi var. WB Gun Isigi veya Oto.',uy:'Tripod olmadan 1/30s altina inme — 42MP sarsintıyi affetmez!',alt:[{iso:800,diy:'f/4',ens:'1/60',et:'Elde tutarak'}]},
+  ic_pencere:{ad:'Icmekan Pencere',ev:9,iso:200,diy:'f/2.8',ens:'1/125',ip:'Pencere isigi en guzel ic mekan isığıdır. 45 derece yana konumlandirin. Live View histogram kontrolu.',uy:'',alt:[{iso:400,diy:'f/4',ens:'1/160',et:'Biraz guvenli'}]},
+  ic_yapay:{ad:'Icmekan Yapay Isik',ev:7,iso:1600,diy:'f/2.8',ens:'1/60',ip:'Tungsten sari cast yapar — WB Tungsten 3000-3400K. A7R2 ISO 1600-3200 kullanilabilir.',uy:'1/60s altina dusme — flicker riski! LED icin 1/100s dene.',alt:[{iso:3200,diy:'f/4',ens:'1/100',et:'Anti-flicker'}]},
+  alacakaranlik:{ad:'Alacakaranlik',ev:4,iso:1600,diy:'f/2.8',ens:'1/15',ip:'IBIS acik tutun. 42MP bu ISOda gurultulu ama kullanilabilir. NR yazilimla duzeltilir.',uy:'Tripod onerili! Elde tutarak 1/30s altina inme.',alt:[{iso:3200,diy:'f/2.8',ens:'1/30',et:'Elde tutarak'}]},
+  gece_sehir:{ad:'Gece Sehir',ev:2,iso:3200,diy:'f/2.8',ens:'1/30',ip:'AWB genellikle iyi sonuc verir. A7R2 BSI sensoru bu kosullar icin tasarlandı. Highlight kontrolu yapın.',uy:'Tripod varsa ISO 100, 10-30s dene — dramatik fark!',alt:[{iso:100,diy:'f/8',ens:'15s',et:'Tripod uzun poz'}]},
+  yildiz:{ad:'Yildiz / Samanyolu',ev:0,iso:3200,diy:'f/2.8',ens:'20s',ip:'500 Kurali: max enstantane = 500 / odak uzakligi. 24mm icin 500/24 = 20s. Uzeri yildiz cizgi yapar. Manuel netleme: LiveView yildıza zoom.',uy:'Tripod + Kablo deklarsor SART! Manuel netleme.',alt:[{iso:6400,diy:'f/2.8',ens:'15s',et:'Daha parlak'}]},
+  konser:{ad:'Konser / Sahne',ev:3,iso:3200,diy:'f/2.8',ens:'1/200',ip:'Flash genelde yasak. AWB ve Auto ISO 3200 limit kullanın. En parlak ani bekleyin.',uy:'ISO 6400e cikmaktan korkmayin — bulanik > gurultulu!',alt:[{iso:6400,diy:'f/2.8',ens:'1/320',et:'Hareketi dondur'}]}
+};
+
+var secNd=null, secEns=null, secEnsStr='';
+
+// ── EVENT LISTENERS ─────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+
+  // TABS
+  document.getElementById('tab-isik').addEventListener('click', function(){ tabSec('isik'); });
+  document.getElementById('tab-nd').addEventListener('click',   function(){ tabSec('nd');   });
+  document.getElementById('tab-ozel').addEventListener('click', function(){ tabSec('ozel'); });
+
+  // ISIK KARTLARI
+  var ikler = document.querySelectorAll('button.ik');
+  for (var i=0; i<ikler.length; i++) {
+    (function(btn) {
+      btn.addEventListener('click', function() { isikSec(btn); });
+    })(ikler[i]);
+  }
+
+  // ENS BUTONLARI
+  var eBtns = document.querySelectorAll('button.ei');
+  for (var i=0; i<eBtns.length; i++) {
+    (function(btn) {
+      btn.addEventListener('click', function() {
+        var all = document.querySelectorAll('button.ei');
+        for (var j=0; j<all.length; j++) all[j].classList.remove('on');
+        btn.classList.add('on');
+        secEnsStr = btn.getAttribute('data-ens');
+        secEns = parseFloat(btn.getAttribute('data-val'));
+      });
+    })(eBtns[i]);
+  }
+
+  // ND BUTONLARI
+  var nBtns = document.querySelectorAll('button.ni');
+  for (var i=0; i<nBtns.length; i++) {
+    (function(btn) {
+      btn.addEventListener('click', function() {
+        var all = document.querySelectorAll('button.ni');
+        for (var j=0; j<all.length; j++) all[j].classList.remove('on');
+        btn.classList.add('on');
+        secNd = { f: parseFloat(btn.getAttribute('data-nd')), ad: btn.getAttribute('data-ad') };
+      });
+    })(nBtns[i]);
+  }
+
+  // HESAPLA BUTONLARI
+  document.getElementById('btnNdHesap').addEventListener('click', ndHesapla);
+  document.getElementById('btnOzelHesap').addEventListener('click', ozelHesapla);
+});
+
+function tabSec(id) {
+  var secs = document.querySelectorAll('.sec');
+  var tabs = document.querySelectorAll('button.tab');
+  for (var i=0; i<secs.length; i++) secs[i].classList.remove('on');
+  for (var i=0; i<tabs.length; i++) tabs[i].classList.remove('on');
+  document.getElementById('s-'+id).classList.add('on');
+  document.getElementById('tab-'+id).classList.add('on');
+}
+
+function isikSec(btn) {
+  var all = document.querySelectorAll('button.ik');
+  for (var i=0; i<all.length; i++) all[i].classList.remove('on');
+  btn.classList.add('on');
+  var id = btn.getAttribute('data-isik');
+  var d = ISIK[id];
+  if (!d) return;
+  document.getElementById('dpScene').textContent = d.ad;
+  document.getElementById('dv_iso').textContent = 'ISO '+d.iso;
+  document.getElementById('dv_diy').textContent = d.diy;
+  document.getElementById('dv_ens').textContent = d.ens;
+  document.getElementById('dpIpucu').textContent = d.ip;
+  var uy = document.getElementById('dpUyari');
+  if (d.uy) { uy.textContent = 'UYARI: '+d.uy; uy.classList.add('on'); }
+  else uy.classList.remove('on');
+  document.getElementById('degerPanel').classList.add('on');
+  var ev=d.ev, pct=Math.max(2,Math.min(96,(ev/16)*100));
+  var renk=ev>12?'#22c55e':ev>8?'#e8960a':ev>4?'#f59e0b':'#3b82f6';
+  var ef=document.getElementById('evFill');
+  ef.style.width=pct+'%'; ef.style.background=renk;
+  var evV=document.getElementById('evVal');
+  evV.textContent='EV '+ev+' — '+evAc(ev); evV.style.color=renk;
+  document.getElementById('evPanel').classList.add('on');
+  var ap=document.getElementById('altPanel'), al=document.getElementById('altListe');
+  if (d.alt && d.alt.length) {
+    var h='';
+    for (var i=0; i<d.alt.length; i++) {
+      var a=d.alt[i];
+      h+='<div class="alt-i"><span class="alt-et">'+a.et+'</span><span class="alt-vl">ISO '+a.iso+' '+a.diy+' '+a.ens+'</span></div>';
+    }
+    al.innerHTML=h; ap.style.display='block';
+  } else { ap.style.display='none'; }
+}
+
+function evAc(ev) {
+  if (ev>=14) return 'Cok parlak';
+  if (ev>=12) return 'Gun isigi';
+  if (ev>=10) return 'Acik dis';
+  if (ev>=8)  return 'Golge / Altin Saat';
+  if (ev>=6)  return 'Mavi Saat';
+  if (ev>=4)  return 'Alacakaranlik';
+  if (ev>=2)  return 'Gece sehir';
+  return 'Karanlik';
+}
+
+function ndHesapla() {
+  if (!secNd) { alert('ND filtre secin!'); return; }
+  if (!secEns) { alert('Filtresiz enstantane secin!'); return; }
+  var yeni=secEns*secNd.f, ss=fmtS(yeni);
+  document.getElementById('nsVal').textContent=ss;
+  document.getElementById('nsSub').textContent=secEnsStr+' x '+secNd.ad+' ('+secNd.f+')';
+  var st=Math.round(Math.log(secNd.f)/Math.log(2));
+  document.getElementById('nsGrid').innerHTML=
+    '<div class="ns-k"><div class="ns-ki"><div class="nkv">'+secEnsStr+'</div><div class="nkl">Filtresiz</div></div></div>'+
+    '<div class="ns-k"><div class="ns-ki"><div class="nkv">'+secNd.ad+'</div><div class="nkl">Filtre</div></div></div>'+
+    '<div class="ns-k"><div class="ns-ki"><div class="nkv">'+st+' stop</div><div class="nkl">Azalma</div></div></div>'+
+    '<div class="ns-k"><div class="ns-ki"><div class="nkv">'+ss+'</div><div class="nkl">Yeni sure</div></div></div>';
+  document.getElementById('nsIp').textContent=ndOn(yeni);
+  document.getElementById('ndSonuc').classList.add('on');
+}
+
+function fmtS(s) {
+  if (s<0.001) return (s*1000).toFixed(1)+'ms';
+  if (s<0.5)   return '1/'+Math.round(1/s)+'s';
+  if (s<60)    return s.toFixed(1)+'s';
+  if (s<3600)  return Math.floor(s/60)+'dk '+Math.round(s%60)+'s';
+  return (s/3600).toFixed(1)+'sa';
+}
+
+function ndOn(s) {
+  if (s>7200) return 'Cok uzun poz! Sicaklik gurultusu artar. Uzun Poz GR aktif edin.';
+  if (s>300)  return 'Uzun poz: Tripod, kablo deklarsor, Long Exp NR aktif.';
+  if (s>30)   return 'Bulb moduna gecin (B). Diyafram kadranu > Bulb. Zamanlayıcı ile sayın.';
+  if (s>10)   return 'Tripod sart. Ipek su ve hareket bulanikligı icin ideal.';
+  if (s>1)    return 'Tripod kullanin. Hareket efekti baslar.';
+  return 'Elde tutulabilir. IBIS acik tutun.';
+}
+
+function ozelHesapla() {
+  var iso=parseFloat(document.getElementById('oz_iso').value);
+  var diy=parseFloat(document.getElementById('oz_diy').value);
+  var ens=parseFloat(document.getElementById('oz_ens').value);
+  var ev=parseFloat(document.getElementById('oz_ev').value);
+  var bos=(isNaN(iso)?1:0)+(isNaN(diy)?1:0)+(isNaN(ens)?1:0);
+  var h='';
+  if (bos===0) {
+    var hev=Math.log(diy*diy/(1/ens))/Math.log(2)-Math.log(iso/100)/Math.log(2);
+    var rk=hev>12?'#22c55e':hev>6?'#e8960a':'#3b82f6';
+    h='<div style="background:#181c24;border:1px solid #252c3a;border-radius:12px;padding:16px;margin-top:4px;">'+
+      '<div style="font-size:10px;letter-spacing:2px;color:#5a6880;margin-bottom:8px;text-transform:uppercase;">HESAPLANAN EV</div>'+
+      '<div style="font-size:44px;font-weight:700;color:'+rk+';line-height:1;">EV '+hev.toFixed(1)+'</div>'+
+      '<div style="font-size:13px;color:#5a6880;margin-top:6px;">'+evAc(Math.round(hev))+'</div>'+
+      '<div style="margin-top:12px;font-size:12px;color:#5a6880;background:#1e2330;border-radius:8px;padding:10px;line-height:1.6;">'+
+      'ISO '+iso+' f/'+diy+' 1/'+ens+'s<br>'+(hev<ev-1?'UYARI: Cok karanlik — ISO veya diyaframi artir':hev>ev+1?'UYARI: Cok aydinlik — ISO duşur veya kapat':'OK: Sahne EVsine uygun')+'</div></div>';
+  } else if (bos===1) {
+    if (isNaN(iso)) {
+      var v=Math.round(Math.pow(2,ev)*(1/ens)*100/(diy*diy)/50)*50;
+      v=Math.max(50,Math.min(25600,v));
+      h=skart('ISO','ISO '+v,'EV '+ev+' icin · f/'+diy+' · 1/'+ens+'s',isoY(v));
+    } else if (isNaN(diy)) {
+      var v=Math.round(Math.sqrt(Math.pow(2,ev)*(1/ens)*(iso/100))*10)/10;
+      h=skart('DIYAFRAM','f/'+v,'EV '+ev+' icin · ISO '+iso+' · 1/'+ens+'s',diyY(v));
+    } else {
+      var v=(diy*diy)/(Math.pow(2,ev)*(iso/100));
+      var es=v<0.5?'1/'+Math.round(1/v)+'s':v.toFixed(1)+'s';
+      h=skart('ENSTANTANE',es,'EV '+ev+' icin · ISO '+iso+' · f/'+diy,ensY(v));
+    }
+  } else {
+    h='<div style="background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.3);border-radius:8px;padding:12px;font-size:13px;color:#fca5a5;margin-top:4px;">En fazla bir alan bos birakilabilir.</div>';
+  }
+  document.getElementById('ozelSonuc').innerHTML=h;
+}
+
+function skart(l,v,s,y) {
+  return '<div style="background:#181c24;border:1px solid #252c3a;border-radius:12px;overflow:hidden;margin-top:4px;">'+
+    '<div style="background:#7a4800;padding:10px 16px;font-size:10px;font-weight:700;letter-spacing:2px;color:#fbb022;text-transform:uppercase;">// '+l+'</div>'+
+    '<div style="padding:16px;"><div style="font-size:40px;font-weight:700;color:#fbb022;line-height:1;margin-bottom:6px;">'+v+'</div>'+
+    '<div style="font-size:12px;color:#5a6880;margin-bottom:12px;">'+s+'</div>'+
+    '<div style="font-size:13px;color:#cdd5e0;background:#1e2330;border-radius:8px;padding:10px;line-height:1.6;border-left:3px solid #e8960a;">'+y+'</div></div></div>';
+}
+function isoY(v){if(v<=100)return 'Mukemmel. Base ISO, max detay.';if(v<=400)return 'Cok iyi. Gurultu yok.';if(v<=1600)return 'Iyi. BSI sensoru guclu.';if(v<=6400)return 'Kullanilabilir. NR ile duzeltilir.';return 'Son care. Siyah-beyaza cevirmeyi dusunun.';}
+function diyY(f){if(f<2)return 'Cok sig. Odak kacabilir.';if(f<4)return 'Portrede arka plan bulaniklaşir.';if(f<=8)return 'Ideal. Lens performansi zirveye yakin.';if(f<=11)return 'Manzara icin iyi. 42MP maksimum.';return 'Difraksiyon baslayabilir. f/16 uzeri duşer.';}
+function ensY(s){if(s<1/500)return 'Hareketi dondurur.';if(s<1/100)return 'Gunluk kullanim icin guvenli.';if(s<1/30)return '42MP sarsintiya duyarli. IBIS acik.';if(s<1)return 'Tripod siddetle onerilir!';if(s<30)return 'Uzun poz. Tripod + kablo deklarsor.';return 'Bulb modu. Kablo ile sayın.';}
+</script>
+</body>
+</html>
