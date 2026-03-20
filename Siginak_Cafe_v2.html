@@ -515,19 +515,19 @@ function masaSiparisRender() {
     siparisler.forEach(function(s) {
       var key = s._key || s.uid;
       var benimSiparis = s.garson === aktifGarson || aktifRol === 'kasa' || aktifRol === 'yonetim';
-      html += '<div class="si">';
+      html += '<div class="si" data-key="'+key+'" data-masa="'+seciliMasa+'">';
       html += '<div class="si-ad">'+s.ad+'<div class="si-garson">'+( s.garson||'')+'</div></div>';
       if (benimSiparis) {
         html += '<div class="si-adet-ctrl">';
-        html += '<button class="si-btn" onclick="adetDegistir('+seciliMasa+',''+key+'''+',-1)">−</button>';
+        html += '<button class="si-btn si-azalt">−</button>';
         html += '<span class="si-n">'+(s.adet||1)+'</span>';
-        html += '<button class="si-btn" onclick="adetDegistir('+seciliMasa+',''+key+'''+',1)">+</button>';
+        html += '<button class="si-btn si-artir">+</button>';
         html += '</div>';
       } else {
         html += '<span class="si-n" style="color:var(--muted)">×'+(s.adet||1)+'</span>';
       }
       html += '<div class="si-fiyat">'+fmt(s.fiyat*(s.adet||1))+'</div>';
-      if (benimSiparis) html += '<button class="si-sil" onclick="siparisSil('+seciliMasa+',''+key+'''+')">✕</button>';
+      if (benimSiparis) html += '<button class="si-sil si-del">✕</button>';
       html += '</div>';
     });
   }
@@ -544,6 +544,26 @@ function masaSiparisRender() {
   html += '</div></div></div>';
 
   document.getElementById('masaSiparisPanel').innerHTML = html;
+  // Siparis buton event delegation
+  var panel = document.getElementById('masaSiparisPanel');
+  panel.querySelectorAll('.si-azalt').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var si = btn.closest('.si'); if(!si) return;
+      adetDegistir(parseInt(si.getAttribute('data-masa')), si.getAttribute('data-key'), -1);
+    });
+  });
+  panel.querySelectorAll('.si-artir').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var si = btn.closest('.si'); if(!si) return;
+      adetDegistir(parseInt(si.getAttribute('data-masa')), si.getAttribute('data-key'), 1);
+    });
+  });
+  panel.querySelectorAll('.si-del').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var si = btn.closest('.si'); if(!si) return;
+      siparisSil(parseInt(si.getAttribute('data-masa')), si.getAttribute('data-key'));
+    });
+  });
 }
 
 function masaToplam(no) {
