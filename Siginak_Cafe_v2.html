@@ -30,6 +30,8 @@ body{font-family:-apple-system,Helvetica,Arial,sans-serif;background:var(--bg);c
 .rol-btn.kasa{border-color:var(--blue2);}
 .rol-btn.yonetim{border-color:var(--green2);grid-column:1/-1;}
 .rol-ic{font-size:36px;display:block;margin-bottom:8px;}
+.rol-ad{font-size:15px;font-weight:800;color:var(--text);display:block;}
+.rol-acik{font-size:11px;color:var(--muted);margin-top:3px;display:block;}
 .rol-ad{font-size:15px;font-weight:800;color:var(--text);}
 .rol-acik{font-size:11px;color:var(--muted);margin-top:3px;}
 .garson-sec{width:100%;max-width:340px;margin-top:16px;}
@@ -57,7 +59,10 @@ body{font-family:-apple-system,Helvetica,Arial,sans-serif;background:var(--bg);c
 /* MASA GRID */
 .masa-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:7px;margin-bottom:14px;}
 @media(max-width:400px){.masa-grid{grid-template-columns:repeat(4,1fr);}}
-.masa-btn{background:var(--surface2);border:2px solid var(--border);border-radius:9px;padding:7px 3px;text-align:center;cursor:pointer;position:relative;transition:border-color .15s;}
+.masa-btn{
+  font-family:-apple-system,Helvetica,Arial,sans-serif;
+  -webkit-appearance:none;
+  cursor:pointer;background:var(--surface2);border:2px solid var(--border);border-radius:9px;padding:7px 3px;text-align:center;cursor:pointer;position:relative;transition:border-color .15s;}
 .masa-btn.dolu{border-color:var(--gold);}
 .masa-btn.secili{border-color:var(--gold2);background:rgba(200,150,10,0.15);box-shadow:0 0 0 2px var(--gold);}
 .masa-btn.odeme{border-color:#ff6060;background:rgba(200,50,50,0.1);}
@@ -173,21 +178,21 @@ body{font-family:-apple-system,Helvetica,Arial,sans-serif;background:var(--bg);c
   <div class="giris-logo">☕ SIĞINAK CAFE</div>
   <div class="giris-sub">Sipariş Yönetim Sistemi</div>
   <div class="rol-grid">
-    <div class="rol-btn garson" onclick="rolSec('garson')">
+    <button type="button" class="rol-btn garson" id="btn-garson">
       <span class="rol-ic">🧑‍🍳</span>
-      <div class="rol-ad">Garson</div>
-      <div class="rol-acik">Sipariş al</div>
-    </div>
-    <div class="rol-btn kasa" onclick="rolSec('kasa')">
+      <span class="rol-ad">Garson</span>
+      <span class="rol-acik">Sipariş al</span>
+    </button>
+    <button type="button" class="rol-btn kasa" id="btn-kasa">
       <span class="rol-ic">🏦</span>
-      <div class="rol-ad">Kasa</div>
-      <div class="rol-acik">Ödeme al</div>
-    </div>
-    <div class="rol-btn yonetim" onclick="rolSec('yonetim')">
+      <span class="rol-ad">Kasa</span>
+      <span class="rol-acik">Ödeme al</span>
+    </button>
+    <button type="button" class="rol-btn yonetim" id="btn-yonetim">
       <span class="rol-ic">⚙️</span>
-      <div class="rol-ad">Yönetim</div>
-      <div class="rol-acik">Menü düzenle · Gün sonu</div>
-    </div>
+      <span class="rol-ad">Yönetim</span>
+      <span class="rol-acik">Menü düzenle · Gün sonu</span>
+    </button>
   </div>
   <div class="garson-sec" id="garsonSec" style="display:none;">
     <input class="garson-input" id="garsonAdi" placeholder="Adınızı girin (örn: Ahmet)" maxlength="20">
@@ -408,6 +413,8 @@ function basla() {
   },1000);
 
   sayfaAc('masalar');
+
+  // Masa grid event delegation (her render sonrası çalışır zaten)
 }
 
 function cikisYap() {
@@ -460,16 +467,21 @@ function masalarRender() {
     var toplam = dolu ? masaToplam(i) : 0;
     var adet = dolu ? sp.reduce(function(t,s){return t+(s.adet||1);},0) : 0;
     var cls = 'masa-btn'+(dolu?' dolu':'')+(seciliMasa===i?' secili':'');
-    html += '<div class="'+cls+'" onclick="masaSec('+i+')">';
+    html += '<button type="button" class="'+cls+'" data-masa="'+i+'">';
     html += '<div class="masa-no">'+i+'</div>';
     if (dolu) {
       html += '<div class="masa-tutar">'+fmt(toplam)+'</div>';
       if (m.garson) html += '<div class="masa-garson">'+m.garson+'</div>';
       html += '<div class="masa-adet">'+adet+'</div>';
     }
-    html += '</div>';
+    html += '</button>';
   }
   grid.innerHTML = html;
+  // iOS uyumlu event delegation
+  var btns = grid.querySelectorAll('button.masa-btn');
+  for (var i=0; i<btns.length; i++) {
+    (function(b){ b.addEventListener('click', function(){ masaSec(parseInt(b.getAttribute('data-masa'))); }); })(btns[i]);
+  }
   genelOzetRender();
   if (seciliMasa) masaSiparisRender();
 }
@@ -849,6 +861,16 @@ function toast(msg, ok, err) {
   clearTimeout(toastTimer);
   toastTimer=setTimeout(function(){el.classList.remove('show');},2500);
 }
+
+// Giriş ekranı butonları - iOS uyumlu
+document.addEventListener('DOMContentLoaded', function() {
+  var btnGarson = document.getElementById('btn-garson');
+  var btnKasa   = document.getElementById('btn-kasa');
+  var btnYonetim= document.getElementById('btn-yonetim');
+  if (btnGarson)  btnGarson.addEventListener('click',  function(){ rolSec('garson'); });
+  if (btnKasa)    btnKasa.addEventListener('click',    function(){ rolSec('kasa'); });
+  if (btnYonetim) btnYonetim.addEventListener('click', function(){ rolSec('yonetim'); });
+});
 </script>
 </body>
 </html>
