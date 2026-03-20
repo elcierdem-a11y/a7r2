@@ -196,7 +196,7 @@ body{font-family:-apple-system,Helvetica,Arial,sans-serif;background:var(--bg);c
   </div>
   <div class="garson-sec" id="garsonSec" style="display:none;">
     <input class="garson-input" id="garsonAdi" placeholder="Adınızı girin (örn: Ahmet)" maxlength="20">
-    <button class="garson-giris-btn" onclick="garsonGiris()">Giriş Yap →</button>
+    <button class="garson-giris-btn" id="btn-giris">Giriş Yap →</button>
   </div>
 </div>
 
@@ -209,7 +209,7 @@ body{font-family:-apple-system,Helvetica,Arial,sans-serif;background:var(--bg);c
         <div class="header-rol" id="headerRol"></div>
         <div id="headerSaat"></div>
       </div>
-      <button class="cikis-btn" onclick="cikisYap()">Çıkış</button>
+      <button class="cikis-btn" id="btn-cikis">Çıkış</button>
     </div>
   </div>
 
@@ -240,16 +240,16 @@ body{font-family:-apple-system,Helvetica,Arial,sans-serif;background:var(--bg);c
   <div class="pb"></div>
 
   <div class="nav" id="navBar">
-    <button class="nb on" id="nav-masalar" onclick="sayfaAc('masalar')">
+    <button class="nb on" id="nav-masalar">
       <span class="nb-ic">🪑</span><span class="nb-lbl">Masalar</span>
     </button>
-    <button class="nb" id="nav-menu" onclick="sayfaAc('menu')">
+    <button class="nb" id="nav-menu">
       <span class="nb-ic">📋</span><span class="nb-lbl">Menü</span>
     </button>
-    <button class="nb" id="nav-kasa" onclick="sayfaAc('kasa')" style="display:none;">
+    <button class="nb" id="nav-kasa" style="display:none;">
       <span class="nb-ic">🏦</span><span class="nb-lbl">Kasa</span>
     </button>
-    <button class="nb" id="nav-yonetim" onclick="sayfaAc('yonetim')" style="display:none;">
+    <button class="nb" id="nav-yonetim" style="display:none;">
       <span class="nb-ic">⚙️</span><span class="nb-lbl">Yönetim</span>
     </button>
   </div>
@@ -537,9 +537,9 @@ function masaSiparisRender() {
   html += '<div class="sp-foot">';
   html += '<div class="sp-toplam"><span>TOPLAM</span>'+fmt(toplam)+'</div>';
   html += '<div class="foot-btns">';
-  html += '<button class="kapat-btn" onclick="masaKapat()">Kapat</button>';
+  html += '<button type="button" class="kapat-btn" id="btn-kapat">Kapat</button>';
   if (aktifRol === 'kasa' || aktifRol === 'yonetim') {
-    html += '<button class="odendi-btn" onclick="masaOdendi('+seciliMasa+')">✓ Ödendi</button>';
+    html += '<button type="button" class="odendi-btn" id="btn-odendi">✓ Ödendi</button>';
   }
   html += '</div></div></div>';
 
@@ -564,6 +564,11 @@ function masaSiparisRender() {
       siparisSil(parseInt(si.getAttribute('data-masa')), si.getAttribute('data-key'));
     });
   });
+  // kapat ve odendi
+  var bKapat = document.getElementById('btn-kapat');
+  var bOdendi = document.getElementById('btn-odendi');
+  if(bKapat) bKapat.addEventListener('click', masaKapat);
+  if(bOdendi) bOdendi.addEventListener('click', function(){ masaOdendi(seciliMasa); });
 }
 
 function masaToplam(no) {
@@ -709,15 +714,22 @@ function menuRender() {
           if(s.id===u.id && s.garson===aktifGarson) adet+=(s.adet||1);
         });
       }
-      html += '<div class="mi'+(adet>0?' secilmis':'')+'" onclick="urunEkle('+u.id+')">';
+      html += '<button type="button" class="mi'+(adet>0?' secilmis':'')+'" data-urun="'+u.id+'">';
       html += '<div><div class="mi-ad">'+u.ad+(adet>0?' <span style="color:var(--gold2);font-weight:800">×'+adet+'</span>':'')+'</div>';
       if(u.acik) html += '<div class="mi-acik">'+u.acik+'</div>';
       html += '</div><div class="mi-fiyat">'+fmt(u.fiyat)+'</div>';
-      html += '<button class="mi-ekle" onclick="event.stopPropagation();urunEkle('+u.id+')">+</button></div>';
+      html += '<button type="button" class="mi-ekle" data-urunekle="'+u.id+'">+</button></button>';
     });
     html += '</div>';
   });
   document.getElementById('menuListesi').innerHTML = html;
+  // iOS event delegation - menü
+  document.getElementById('menuListesi').addEventListener('click', function(e) {
+    var mi = e.target.closest('button.mi');
+    var me = e.target.closest('button.mi-ekle');
+    if (me) { e.stopPropagation(); var id=parseInt(me.getAttribute('data-urunekle')); if(id) urunEkle(id); return; }
+    if (mi) { var id=parseInt(mi.getAttribute('data-urun')); if(id) urunEkle(id); }
+  });
 }
 
 // ══════════════════════════════════════
@@ -743,7 +755,7 @@ function kasaRender() {
       html+='<div><div class="ko-masa">Masa '+k+'</div><div class="ko-detay">'+(m.garson||'')+' · '+adet+' ürün</div></div>';
       html+='<div style="display:flex;align-items:center;gap:8px;">';
       html+='<div class="ko-tutar">'+fmt(masaToplam(parseInt(k)))+'</div>';
-      html+='<button class="ko-odendi" onclick="masaOdendi('+k+')">Ödendi</button>';
+      html+='<button type="button" class="ko-odendi" data-kasaodendi="'+k+'">Ödendi</button>';
       html+='</div></div>';
     });
     html += '</div>';
@@ -766,7 +778,7 @@ function kasaRender() {
         gsToplam += g.tutar;
       });
       gsHtml += '<div class="gs-toplam"><span>TOPLAM TAHSİLAT</span><span>'+fmt(gsToplam)+'</span></div>';
-      gsHtml += '<button class="gun-sifirla-btn" onclick="gunSonuSifirla()">🗑 Gün Sonu — Tüm Kayıtları Sil</button>';
+      gsHtml += '<button type="button" class="gun-sifirla-btn" id="btn-gunsonu">🗑 Gün Sonu — Tüm Kayıtları Sil</button>';
       gsHtml += '</div>';
       document.getElementById('kasaIcerik').innerHTML = html + gsHtml;
     } else {
@@ -775,6 +787,13 @@ function kasaRender() {
   });
 
   document.getElementById('kasaIcerik').innerHTML = html + '<div style="text-align:center;color:var(--dim);font-size:12px;padding:10px;">Tahsilat kaydı yükleniyor...</div>';
+  // iOS kasa event delegation
+  document.getElementById('kasaIcerik').addEventListener('click', function(e) {
+    var ko = e.target.closest('button.ko-odendi');
+    var gs = e.target.closest('button#btn-gunsonu');
+    if(ko){ var k=parseInt(ko.getAttribute('data-kasaodendi')); if(k) masaOdendi(k); return; }
+    if(gs){ gunSonuSifirla(); return; }
+  });
 }
 
 function gunSonuSifirla() {
@@ -804,7 +823,7 @@ function yonetimRender() {
   html += '<div class="yf-row">';
   html += '<input class="yf-in" id="yf_fiyat" placeholder="Fiyat (₺)" type="number">';
   html += '<select class="yf-sel" id="yf_kat">'+selHtml+'</select></div>';
-  html += '<button class="yf-btn" onclick="yeniUrunEkle()">+ Ürün Ekle</button></div></div>';
+  html += '<button type="button" class="yf-btn" id="btn-yeniurun">+ Ürün Ekle</button></div></div>';
 
   html += '<div class="admin-sec"><div class="admin-title">Ürün Yönetimi</div>';
   kategoriler.forEach(function(kat) {
@@ -815,13 +834,24 @@ function yonetimRender() {
       if(u.acik) html += '<div class="ai-acik">'+u.acik+'</div>';
       html += '</div>';
       html += '<input class="ai-fi" type="number" value="'+u.fiyat+'" onchange="fiyatGuncelle('+u.id+',this.value)"> <span style="font-size:11px;color:var(--muted)">₺</span>';
-      html += '<button class="ai-sil" onclick="menuUrunSil('+u.id+')">Sil</button>';
+      html += '<button type="button" class="ai-sil" data-urunsil="'+u.id+'">Sil</button>';
       html += '</div>';
     });
   });
   html += '</div>';
 
   document.getElementById('yonetimIcerik').innerHTML = html;
+  // iOS yonetim event delegation
+  document.getElementById('yonetimIcerik').addEventListener('change', function(e) {
+    var fi = e.target.closest('input.ai-fi');
+    if(fi){ var id=parseInt(fi.getAttribute('data-fiyatid')); if(id) fiyatGuncelle(id, fi.value); return; }
+  });
+  document.getElementById('yonetimIcerik').addEventListener('click', function(e) {
+    var sil = e.target.closest('button.ai-sil');
+    var ekle = e.target.closest('button#btn-yeniurun');
+    if(sil){ var id=parseInt(sil.getAttribute('data-urunsil')); if(id) menuUrunSil(id); return; }
+    if(ekle){ yeniUrunEkle(); return; }
+  });
 }
 
 function fiyatGuncelle(id, yeniFiyat) {
@@ -884,12 +914,30 @@ function toast(msg, ok, err) {
 
 // Giriş ekranı butonları - iOS uyumlu
 document.addEventListener('DOMContentLoaded', function() {
-  var btnGarson = document.getElementById('btn-garson');
-  var btnKasa   = document.getElementById('btn-kasa');
-  var btnYonetim= document.getElementById('btn-yonetim');
-  if (btnGarson)  btnGarson.addEventListener('click',  function(){ rolSec('garson'); });
-  if (btnKasa)    btnKasa.addEventListener('click',    function(){ rolSec('kasa'); });
-  if (btnYonetim) btnYonetim.addEventListener('click', function(){ rolSec('yonetim'); });
+  // Giriş rol butonları
+  var btnGarson  = document.getElementById('btn-garson');
+  var btnKasa2   = document.getElementById('btn-kasa');
+  var btnYonetim = document.getElementById('btn-yonetim');
+  var btnGiris   = document.getElementById('btn-giris');
+  var btnCikis   = document.getElementById('btn-cikis');
+  var navMasalar = document.getElementById('nav-masalar');
+  var navMenu    = document.getElementById('nav-menu');
+  var navKasa    = document.getElementById('nav-kasa');
+  var navYonetim = document.getElementById('nav-yonetim');
+
+  if(btnGarson)  btnGarson.addEventListener('click',  function(){ rolSec('garson'); });
+  if(btnKasa2)   btnKasa2.addEventListener('click',   function(){ rolSec('kasa'); });
+  if(btnYonetim) btnYonetim.addEventListener('click', function(){ rolSec('yonetim'); });
+  if(btnGiris)   btnGiris.addEventListener('click',   garsonGiris);
+  if(btnCikis)   btnCikis.addEventListener('click',   cikisYap);
+  if(navMasalar) navMasalar.addEventListener('click', function(){ sayfaAc('masalar'); });
+  if(navMenu)    navMenu.addEventListener('click',    function(){ sayfaAc('menu'); });
+  if(navKasa)    navKasa.addEventListener('click',    function(){ sayfaAc('kasa'); });
+  if(navYonetim) navYonetim.addEventListener('click', function(){ sayfaAc('yonetim'); });
+
+  // Garson adı input enter
+  var gInput = document.getElementById('garsonAdi');
+  if(gInput) gInput.addEventListener('keydown', function(e){ if(e.key==='Enter') garsonGiris(); });
 });
 </script>
 </body>
