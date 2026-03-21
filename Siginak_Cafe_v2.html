@@ -635,28 +635,41 @@ function urunEkle(urunId) {
   if (!urun) return;
 
   var masaPath = '/masalar/'+seciliMasa;
+
   // Garson ve zaman kaydet
   fbPatch(masaPath, {garson: aktifGarson, zaman: new Date().toISOString()});
 
-  // Mevcut siparişleri kontrol et
-  var mevcut = null;
-  var mevcutKey = null;
-  var sp = getSp(DB.masalar[seciliMasa]);
-  sp.forEach(function(s){
-    if (s.id===urunId && s.garson===aktifGarson) { mevcut=s; mevcutKey=s._key||s.uid; }
-  });
+  // Race condition önlemi: Firebase'den ANLIK oku, sonra yaz
+  fbGet(masaPath+'/siparisler').then(function(spData) {
+    var mevcutKey = null;
+    var mevcutAdet = 0;
 
-  if (mevcut && mevcutKey) {
-    // Adet artır
-    fbSet(masaPath+'/siparisler/'+mevcutKey+'/adet', (mevcut.adet||1)+1);
-  } else {
-    // Yeni sipariş Firebase push key ile ekle
-    var newKey = 'sp_'+(Date.now())+'_'+Math.floor(Math.random()*1000);
-    var newSp = {id:urunId, ad:urun.ad, fiyat:urun.fiyat, adet:1, garson:aktifGarson};
-    fbSet(masaPath+'/siparisler/'+newKey, newSp);
-  }
-  toast('Masa '+seciliMasa+' — '+urun.ad, true);
-  menuRender();
+    if (spData && typeof spData === 'object') {
+      Object.keys(spData).forEach(function(k) {
+        var s = spData[k];
+        if (s && s.id === urunId && s.garson === aktifGarson) {
+          mevcutKey = k;
+          mevcutAdet = s.adet || 1;
+        }
+      });
+    }
+
+    if (mevcutKey) {
+      // Var olan siparişin adetini artır
+      fbSet(masaPath+'/siparisler/'+mevcutKey+'/adet', mevcutAdet+1);
+    } else {
+      // Yeni benzersiz key ile ekle
+      var newKey = 'sp_'+aktifGarson.replace(/[^a-zA-Z0-9]/g,'')+'_'+urunId+'_'+Date.now();
+      fbSet(masaPath+'/siparisler/'+newKey, {
+        id: urunId,
+        ad: urun.ad,
+        fiyat: urun.fiyat,
+        adet: 1,
+        garson: aktifGarson
+      });
+    }
+    toast('Masa '+seciliMasa+' — '+urun.ad, true);
+  });
 }
 
 function adetDegistir(masaNo, key, delta) {
