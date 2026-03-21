@@ -320,7 +320,7 @@ function fbPatch(path, data) {
 function fbDelete(path) {
   setSyncLoading();
   return fetch(FB_URL + path + '.json', {method:'DELETE'})
-  .then(function(){setSyncOk();}).catch(function(){setSyncErr();});
+  .then(function(r){setSyncOk();return r;}).catch(function(){setSyncErr();});
 }
 
 // SSE ile gerçek zamanlı dinleme
@@ -544,31 +544,49 @@ function masaSiparisRender() {
   html += '</div></div></div>';
 
   document.getElementById('masaSiparisPanel').innerHTML = html;
-  // Siparis buton event delegation
+  // iOS uyumlu event delegation - tek listener panel üzerinde
   var panel = document.getElementById('masaSiparisPanel');
-  panel.querySelectorAll('.si-azalt').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var si = btn.closest('.si'); if(!si) return;
-      adetDegistir(parseInt(si.getAttribute('data-masa')), si.getAttribute('data-key'), -1);
-    });
+
+  function getSiDiv(el) {
+    // El veya üst elemanlardan .si class'lı olanı bul
+    var cur = el;
+    while (cur && cur !== panel) {
+      if (cur.className && cur.className.indexOf('si ') >= 0 || cur.className === 'si') return cur;
+      if (cur.getAttribute && cur.getAttribute('data-key')) return cur;
+      cur = cur.parentElement;
+    }
+    return null;
+  }
+
+  panel.addEventListener('click', function(e) {
+    var tgt = e.target;
+    var cls = tgt.className || '';
+
+    // data-key'e sahip üst elementi bul
+    function findSi(el) {
+      var cur = el;
+      for (var i=0; i<5; i++) {
+        if (!cur || cur === panel) return null;
+        if (cur.getAttribute && cur.getAttribute('data-key')) return cur;
+        cur = cur.parentElement;
+      }
+      return null;
+    }
+
+    if (cls.indexOf('si-azalt') >= 0 || cls.indexOf('si-artir') >= 0 || cls.indexOf('si-del') >= 0) {
+      var si = findSi(tgt.parentElement);
+      if (!si) si = findSi(tgt);
+      if (!si) return;
+      var key = si.getAttribute('data-key');
+      var masa = parseInt(si.getAttribute('data-masa'));
+      if (!key || !masa) return;
+      if (cls.indexOf('si-azalt') >= 0) { adetDegistir(masa, key, -1); return; }
+      if (cls.indexOf('si-artir') >= 0) { adetDegistir(masa, key, 1); return; }
+      if (cls.indexOf('si-del') >= 0) { siparisSil(masa, key); return; }
+    }
+    if (cls.indexOf('kapat-btn') >= 0) { masaKapat(); return; }
+    if (cls.indexOf('odendi-btn') >= 0) { masaOdendi(seciliMasa); return; }
   });
-  panel.querySelectorAll('.si-artir').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var si = btn.closest('.si'); if(!si) return;
-      adetDegistir(parseInt(si.getAttribute('data-masa')), si.getAttribute('data-key'), 1);
-    });
-  });
-  panel.querySelectorAll('.si-del').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var si = btn.closest('.si'); if(!si) return;
-      siparisSil(parseInt(si.getAttribute('data-masa')), si.getAttribute('data-key'));
-    });
-  });
-  // kapat ve odendi
-  var bKapat = document.getElementById('btn-kapat');
-  var bOdendi = document.getElementById('btn-odendi');
-  if(bKapat) bKapat.addEventListener('click', masaKapat);
-  if(bOdendi) bOdendi.addEventListener('click', function(){ masaOdendi(seciliMasa); });
 }
 
 function masaToplam(no) {
@@ -673,30 +691,29 @@ function urunEkle(urunId) {
 }
 
 function adetDegistir(masaNo, key, delta) {
-  var m = DB.masalar[masaNo];
-  if (!m) return;
-  var sp = getSp(m);
-  var s = sp.find(function(x){return (x._key||x.uid)===key;});
-  if (!s) return;
-  var yeniAdet = (s.adet||1) + delta;
-  if (yeniAdet <= 0) {
-    fbDelete('/masalar/'+masaNo+'/siparisler/'+key);
-    // Kalan sipariş var mı?
-    setTimeout(function(){
-      var kalan = getSp(DB.masalar[masaNo]);
-      if (!kalan.length) fbDelete('/masalar/'+masaNo);
-    }, 500);
-  } else {
-    fbSet('/masalar/'+masaNo+'/siparisler/'+key+'/adet', yeniAdet);
-  }
+  var path = '/masalar/'+masaNo+'/siparisler/'+key;
+  // Firebase'den anlık adet oku, sonra güncelle
+  fbGet(path+'/adet').then(function(mevcutAdet) {
+    var adet = (typeof mevcutAdet === 'number' ? mevcutAdet : 1) + delta;
+    if (adet <= 0) {
+      fbDelete(path).then(function() {
+        // Masa boş kaldı mı?
+        fbGet('/masalar/'+masaNo+'/siparisler').then(function(sp) {
+          if (!sp || Object.keys(sp).length === 0) fbDelete('/masalar/'+masaNo);
+        });
+      });
+    } else {
+      fbSet(path+'/adet', adet);
+    }
+  });
 }
 
 function siparisSil(masaNo, key) {
-  fbDelete('/masalar/'+masaNo+'/siparisler/'+key);
-  setTimeout(function(){
-    var kalan = getSp(DB.masalar[masaNo]);
-    if (!kalan.length) fbDelete('/masalar/'+masaNo);
-  }, 500);
+  fbDelete('/masalar/'+masaNo+'/siparisler/'+key).then(function() {
+    fbGet('/masalar/'+masaNo+'/siparisler').then(function(sp) {
+      if (!sp || Object.keys(sp).length === 0) fbDelete('/masalar/'+masaNo);
+    });
+  });
 }
 
 // ══════════════════════════════════════
